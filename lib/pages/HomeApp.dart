@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lista_de_tarefas/Widgets/todo_list_item.dart';
 import 'package:lista_de_tarefas/models/Todo.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HomeApp extends StatefulWidget {
   HomeApp({Key? key}) : super(key: key);
@@ -29,7 +30,7 @@ class _HomeAppState extends State<HomeApp> {
                     Expanded(
                       child: TextField(
                         controller: textController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Adicione uma Tarefa',
                           hintText: 'Ex.: Estudar Flutter',
@@ -41,9 +42,9 @@ class _HomeAppState extends State<HomeApp> {
                       onPressed: () {
                         String text = textController.text;
                         setState(() {
-                          Todo newTodo=Todo(
-                              title: text,
-                              dateTime: DateTime.now(),
+                          Todo newTodo = Todo(
+                            title: text,
+                            dateTime: DateTime.now(),
                           );
                           todos.add(newTodo);
                         });
@@ -55,14 +56,14 @@ class _HomeAppState extends State<HomeApp> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.add,
                         size: 30,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Flexible(
                   //listas
                   child: ListView(
@@ -71,11 +72,12 @@ class _HomeAppState extends State<HomeApp> {
                       for (Todo todo in todos)
                         TodoListItem(
                           todo: todo,
+                          onDelet: onDelet,
                         ),
                     ],
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   children: <Widget>[
                     Expanded(
@@ -104,7 +106,13 @@ class _HomeAppState extends State<HomeApp> {
     );
   }
 
-  void login() {
+  void onDelet(Todo todo) {
+    setState(() {
+      todos.remove(todo);
+    });
+  }
+
+  void login(Todo todo) {
     String text = textController.text;
     print(text);
   }
