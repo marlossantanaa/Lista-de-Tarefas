@@ -14,6 +14,8 @@ class _HomeAppState extends State<HomeApp> {
   final TextEditingController textController = TextEditingController();
 
   List<Todo> todos = [];
+  Todo? deletedTodo; //=> retorna o objeto deletado
+  int? deletedTodoPos; //=>retorna a posição do objeto deletado
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class _HomeAppState extends State<HomeApp> {
                     Expanded(
                       child: TextField(
                         controller: textController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Adicione uma Tarefa',
                           hintText: 'Ex.: Estudar Flutter',
@@ -86,7 +88,7 @@ class _HomeAppState extends State<HomeApp> {
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: showDeleteTodosConfirmationDialog,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple,
                         foregroundColor: Colors.white,
@@ -107,13 +109,67 @@ class _HomeAppState extends State<HomeApp> {
   }
 
   void onDelet(Todo todo) {
+    deletedTodo = todo; // =>retornando o objeto deletado para a lista
+    deletedTodoPos =
+        todos.indexOf(todo); //=> retornando o objeto deletado para  a posição
     setState(() {
       todos.remove(todo);
     });
+
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      // => retorna mensagem para o  usuario
+      SnackBar(
+        content: Text(
+          'Tarefa ${todo.title} foi removida com sucesso!',
+        ),
+        backgroundColor: Colors.purple,
+        action: SnackBarAction(
+          label: 'Desfazer',
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              todos.insert(
+                  deletedTodoPos!, deletedTodo!); //=>elementos  inserção
+            });
+          },
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
-  void login(Todo todo) {
-    String text = textController.text;
-    print(text);
+  void showDeleteTodosConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Limpar Tudo?'),
+        content: Text('Você tem certeza  que deseja apagar todas as tarefas?'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                  backgroundColor: Colors.purple,
+                  foregroundColor: Colors.white),
+              child: Text('Cancelar')),
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                deletallTodos();
+              },
+              style: TextButton.styleFrom(
+                  backgroundColor: Colors.red, foregroundColor: Colors.white),
+              child: Text('Excluir')),
+        ],
+      ),
+    );
+  }
+
+  void deletallTodos() {
+    setState(() {
+      todos.clear();
+    });
   }
 }
