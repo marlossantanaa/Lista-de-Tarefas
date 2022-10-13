@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lista_de_tarefas/Widgets/todo_list_item.dart';
 import 'package:lista_de_tarefas/models/Todo.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:lista_de_tarefas/repository/todo_repository.dart';
 
 class HomeApp extends StatefulWidget {
   HomeApp({Key? key}) : super(key: key);
@@ -12,10 +13,22 @@ class HomeApp extends StatefulWidget {
 
 class _HomeAppState extends State<HomeApp> {
   final TextEditingController textController = TextEditingController();
+  final TodoRepository todoRepository = TodoRepository();
 
   List<Todo> todos = [];
   Todo? deletedTodo; //=> retorna o objeto deletado
   int? deletedTodoPos; //=>retorna a posição do objeto deletado
+  late String errorText;
+
+  @override
+  void initState() {
+    super.initState();
+    todoRepository.getTodoList().then((value) {
+      setState(() {
+        todos = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +45,11 @@ class _HomeAppState extends State<HomeApp> {
                     Expanded(
                       child: TextField(
                         controller: textController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Adicione uma Tarefa',
                           hintText: 'Ex.: Estudar Flutter',
+                          //errorText: errorText,
                         ),
                       ),
                     ),
@@ -50,6 +64,8 @@ class _HomeAppState extends State<HomeApp> {
                           );
                           todos.add(newTodo);
                         });
+                        textController.clear();
+                        todoRepository.saveTodoList(todos);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.purple,
@@ -67,7 +83,7 @@ class _HomeAppState extends State<HomeApp> {
                 ),
                 const SizedBox(height: 16),
                 Flexible(
-                  //listas
+                  //listasv
                   child: ListView(
                     shrinkWrap: true,
                     children: [
@@ -115,6 +131,7 @@ class _HomeAppState extends State<HomeApp> {
     setState(() {
       todos.remove(todo);
     });
+    todoRepository.saveTodoList(todos);
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -132,6 +149,7 @@ class _HomeAppState extends State<HomeApp> {
               todos.insert(
                   deletedTodoPos!, deletedTodo!); //=>elementos  inserção
             });
+            todoRepository.saveTodoList(todos);
           },
         ),
         duration: const Duration(seconds: 2),
@@ -170,6 +188,7 @@ class _HomeAppState extends State<HomeApp> {
   void deletallTodos() {
     setState(() {
       todos.clear();
+      todoRepository.saveTodoList(todos);
     });
   }
 }
