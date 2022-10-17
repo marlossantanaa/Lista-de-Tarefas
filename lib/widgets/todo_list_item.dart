@@ -14,8 +14,8 @@ class TodoListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Slidable(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 2),//
+          child: Container(
 
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16), color: Colors.grey[200]),
